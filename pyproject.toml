@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "harborline"
+version = "0.1.0"
+description = "Harborline policy corpus retrieval and employee Q&A"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "Harborline project" }]
+dependencies = [
+  "python-dotenv==1.1.1",
+  "numpy==2.2.6",
+  "scikit-learn==1.6.1",
+  "beautifulsoup4==4.13.4",
+  "lxml==5.4.0",
+  "pypdf==5.4.0",
+  "fastapi==0.115.12",
+  "uvicorn==0.34.2",
+  "openai==1.82.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest==8.3.5", "httpx==0.28.1"]
+
+[project.scripts]
+harborline = "harborline.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["harborline*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.harborline]
+seed = 42
+chunk_size = 900
+chunk_overlap = 120

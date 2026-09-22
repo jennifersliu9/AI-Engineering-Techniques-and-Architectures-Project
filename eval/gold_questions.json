@@ -1,0 +1,96 @@
+{
+  "dataset": "harborline_gold_questions",
+  "as_of": "2026-09-21",
+  "seed": 42,
+  "notes": "Fixed evaluation items. Sampling uses HARBORLINE_SEED when --limit is set.",
+  "questions": [
+    {
+      "id": "q-pto-tenure",
+      "question": "How many PTO days do I get after my second anniversary?",
+      "expected_sources": ["01-paid-time-off.md", "pto-quick-reference.txt"],
+      "expected_answer_contains": ["20"]
+    },
+    {
+      "id": "q-pto-carryover",
+      "question": "What is the PTO carryover cap in hours?",
+      "expected_sources": ["01-paid-time-off.md", "pto-quick-reference.txt"],
+      "expected_answer_contains": ["40"]
+    },
+    {
+      "id": "q-holiday-thanksgiving",
+      "question": "Is the day after Thanksgiving a company holiday in 2026?",
+      "expected_sources": ["02-company-holidays.md", "holiday-calendar-2026.html"],
+      "expected_answer_contains": ["27 November"]
+    },
+    {
+      "id": "q-remote-radius",
+      "question": "If I live 32 miles from the Seattle office, am I fully remote?",
+      "expected_sources": ["03-remote-hybrid-work.md"],
+      "expected_answer_contains": ["50"]
+    },
+    {
+      "id": "q-expense-receipt",
+      "question": "Do I need a receipt for an 18 dollar lunch?",
+      "expected_sources": ["04-travel-and-expenses.md", "expense-limits-2026.pdf"],
+      "expected_answer_contains": ["25"]
+    },
+    {
+      "id": "q-hotel-cap",
+      "question": "What is the US hotel nightly cap for a Chicago trip?",
+      "expected_sources": ["04-travel-and-expenses.md", "expense-limits-2026.pdf"],
+      "expected_answer_contains": ["225"]
+    },
+    {
+      "id": "q-security-incident",
+      "question": "What do I do if I clicked a phishing link and entered my Okta password?",
+      "expected_sources": ["05-information-security.md", "acceptable-use-policy.txt"],
+      "expected_answer_contains": ["206-555-0199"]
+    },
+    {
+      "id": "q-401k-vest",
+      "question": "When does the Harborline 401k match vest?",
+      "expected_sources": ["06-employee-benefits.md", "benefits-enrollment-guide.html"],
+      "expected_answer_contains": ["Immediate"]
+    },
+    {
+      "id": "q-newhire-window",
+      "question": "How long do I have to elect medical coverage after my start date?",
+      "expected_sources": ["06-employee-benefits.md", "07-new-hire-onboarding.md", "benefits-enrollment-guide.html"],
+      "expected_answer_contains": ["30"]
+    },
+    {
+      "id": "q-parental-secondary",
+      "question": "How many weeks of paid parental leave do secondary caregivers get?",
+      "expected_sources": ["11-parental-and-family-care.md"],
+      "expected_answer_contains": ["8"]
+    },
+    {
+      "id": "q-alex-hub",
+      "question": "Is Alex Kim required to come to the Seattle office three days a week?",
+      "employee_id": "EMP-1008",
+      "expected_sources": ["employees.json", "03-remote-hybrid-work.md"],
+      "expected_employee_ids": ["EMP-1008"]
+    },
+    {
+      "id": "q-devon-pto",
+      "question": "Can Devon Walsh use PTO tomorrow?",
+      "employee_id": "EMP-1014",
+      "expected_sources": ["pto_balances.json", "01-paid-time-off.md"],
+      "expected_employee_ids": ["EMP-1014"]
+    },
+    {
+      "id": "q-amara-leave",
+      "question": "How many paid parental weeks does Amara Diallo have and when does she return?",
+      "employee_id": "EMP-1015",
+      "expected_sources": ["employees.json", "11-parental-and-family-care.md"],
+      "expected_employee_ids": ["EMP-1015"]
+    },
+    {
+      "id": "q-chris-prorate",
+      "question": "How many PTO hours does Chris Patel accrue per year as a 24 hour part-time employee?",
+      "employee_id": "EMP-1011",
+      "expected_sources": ["pto_balances.json", "01-paid-time-off.md"],
+      "expected_employee_ids": ["EMP-1011"]
+    }
+  ]
+}
