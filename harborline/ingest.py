@@ -1,10 +1,10 @@
-"""Deterministic document loading and chunking. No random splits."""
+"""Deterministic parse, clean, and chunk for markdown, HTML, PDF, TXT, and JSON."""
 
 from __future__ import annotations
 
 import json
 import re
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
 from bs4 import BeautifulSoup
@@ -14,6 +14,7 @@ from harborline.config import Settings, get_settings
 
 CORPUS_SUFFIXES = {".md", ".txt", ".html", ".pdf"}
 SKIP_NAMES = {"readme.md"}
+HEADING_RE = re.compile(r"^(#{1,6})\s+(.+?)\s*$")
 
 
 @dataclass(frozen=True)
@@ -21,34 +22,21 @@ class Chunk:
     chunk_id: str
     source_path: str
     source_name: str
+    source_format: str
+    title: str
+    section: str
     kind: str
     text: str
+    snippet: str
     order: int
-    extra: dict
+    extra: dict = field(default_factory=dict)
 
 
-def _read_pdf(path: Path) -> str:
-    reader = PdfReader(str(path))
-    pages = []
-    for page in reader.pages:
-        pages.append(page.extract_text() or "")
-    return "\n".join(pages)
-
-
-def _read_html(path: Path) -> str:
-    soup = BeautifulSoup(path.read_text(encoding="utf-8"), "lxml")
-    for tag in soup(["script", "style"]):
-        tag.decompose()
-    return soup.get_text("\n", strip=True)
-
-
-def read_file(path: Path) -> str:
-    suffix = path.suffix.lower()
-    if suffix == ".pdf":
-        return _read_pdf(path)
-    if suffix == ".html":
-        return _read_html(path)
-    return path.read_text(encoding="utf-8")
+def make_snippet(text: str, limit: int = 240) -> str:
+    compact = " ".join(text.split())
+    if len(compact) <= limit:
+        return compact
+    return compact[: limit - 3] + "..."
 
 
 def normalize_whitespace(text: str) -> str:
@@ -59,7 +47,7 @@ def normalize_whitespace(text: str) -> str:
 
 
 def chunk_text(text: str, size: int, overlap: int) -> list[str]:
-    """Fixed-window chunks. Order is stable for a given size/overlap."""
+    """Character windows with overlap. Used when a section is longer than size."""
     if size <= 0:
         raise ValueError("chunk size must be positive")
     if overlap < 0 or overlap >= size:
@@ -83,6 +71,119 @@ def chunk_text(text: str, size: int, overlap: int) -> list[str]:
     return chunks
 
 
+def split_markdown_sections(text: str) -> tuple[str, list[tuple[str, str]]]:
+    """Heading-aware sections. Strategy: keep each ##/### block together, then window."""
+    title = "Untitled"
+    sections: list[tuple[str, str]] = []
+    current = "Introduction"
+    buf: list[str] = []
+    for raw_line in text.split("\n"):
+        line = raw_line.rstrip()
+        match = HEADING_RE.match(line.strip())
+        if match:
+            if buf:
+                body = normalize_whitespace("\n".join(buf))
+                if body:
+                    sections.append((current, body))
+                buf = []
+            current = match.group(2).strip()
+            if match.group(1) == "#" and title == "Untitled":
+                title = current
+            buf.append(line.strip())
+        else:
+            buf.append(line)
+    if buf:
+        body = normalize_whitespace("\n".join(buf))
+        if body:
+            sections.append((current, body))
+    if title == "Untitled" and sections:
+        title = sections[0][0]
+    return title, sections
+
+
+def parse_markdown(path: Path) -> tuple[str, list[tuple[str, str]]]:
+    return split_markdown_sections(path.read_text(encoding="utf-8"))
+
+
+def parse_html(path: Path) -> tuple[str, list[tuple[str, str]]]:
+    soup = BeautifulSoup(path.read_text(encoding="utf-8"), "lxml")
+    for tag in soup(["script", "style"]):
+        tag.decompose()
+    title = soup.title.get_text(" ", strip=True) if soup.title else path.stem
+    sections: list[tuple[str, str]] = []
+    current = title
+    buf: list[str] = []
+
+    def flush() -> None:
+        nonlocal buf, current
+        body = normalize_whitespace("\n".join(buf))
+        if body:
+            sections.append((current, body))
+        buf = []
+
+    root = soup.body or soup
+    for el in root.find_all(["h1", "h2", "h3", "h4", "p", "li", "td", "th"]):
+        name = el.name or ""
+        if name in {"h1", "h2", "h3", "h4"}:
+            flush()
+            current = el.get_text(" ", strip=True) or current
+            buf.append(current)
+            continue
+        if el.find(["h1", "h2", "h3", "h4"]):
+            continue
+        text = el.get_text(" ", strip=True)
+        if text:
+            buf.append(text)
+    flush()
+    if not sections:
+        fallback = normalize_whitespace(soup.get_text("\n", strip=True))
+        if fallback:
+            sections.append((title, fallback))
+    return title, sections
+
+
+def parse_pdf(path: Path) -> tuple[str, list[tuple[str, str]]]:
+    reader = PdfReader(str(path))
+    title = path.stem.replace("-", " ")
+    if reader.metadata and reader.metadata.title:
+        title = str(reader.metadata.title)
+    sections: list[tuple[str, str]] = []
+    for index, page in enumerate(reader.pages, start=1):
+        body = normalize_whitespace(page.extract_text() or "")
+        if body:
+            sections.append((f"Page {index}", body))
+    return title, sections
+
+
+def parse_txt(path: Path) -> tuple[str, list[tuple[str, str]]]:
+    text = normalize_whitespace(path.read_text(encoding="utf-8"))
+    lines = [ln.strip() for ln in text.split("\n") if ln.strip()]
+    title = lines[0][:120] if lines else path.stem
+    return title, [("Body", text)]
+
+
+def parse_corpus_file(path: Path) -> tuple[str, str, list[tuple[str, str]]]:
+    suffix = path.suffix.lower()
+    if suffix == ".md":
+        title, sections = parse_markdown(path)
+        return "md", title, sections
+    if suffix == ".html":
+        title, sections = parse_html(path)
+        return "html", title, sections
+    if suffix == ".pdf":
+        title, sections = parse_pdf(path)
+        return "pdf", title, sections
+    title, sections = parse_txt(path)
+    return "txt", title, sections
+
+
+def _windows_for_section(section: str, body: str, size: int, overlap: int) -> list[tuple[str, str]]:
+    parts = chunk_text(body, size, overlap)
+    if len(parts) == 1:
+        return [(section, parts[0])]
+    return [(f"{section} (part {i + 1})", part) for i, part in enumerate(parts)]
+
+
 def _corpus_chunks(settings: Settings) -> list[Chunk]:
     chunks: list[Chunk] = []
     paths = sorted(
@@ -93,20 +194,28 @@ def _corpus_chunks(settings: Settings) -> list[Chunk]:
         and p.name.lower() not in SKIP_NAMES
     )
     for path in paths:
-        raw = read_file(path)
-        parts = chunk_text(raw, settings.chunk_size, settings.chunk_overlap)
-        for order, part in enumerate(parts):
-            chunks.append(
-                Chunk(
-                    chunk_id=f"corpus:{path.name}:{order}",
-                    source_path=str(path.relative_to(settings.root)),
-                    source_name=path.name,
-                    kind="policy",
-                    text=part,
-                    order=order,
-                    extra={"policy_hint": path.stem},
+        fmt, title, sections = parse_corpus_file(path)
+        order = 0
+        for section, body in sections:
+            for sec_label, part in _windows_for_section(
+                section, body, settings.chunk_size, settings.chunk_overlap
+            ):
+                chunks.append(
+                    Chunk(
+                        chunk_id=f"corpus:{path.name}:{order}",
+                        source_path=str(path.relative_to(settings.root)).replace("\\", "/"),
+                        source_name=path.name,
+                        source_format=fmt,
+                        title=title,
+                        section=sec_label,
+                        kind="policy",
+                        text=part,
+                        snippet=make_snippet(part),
+                        order=order,
+                        extra={"policy_hint": path.stem},
+                    )
                 )
-            )
+                order += 1
     return chunks
 
 
@@ -120,29 +229,31 @@ def _structured_chunks(settings: Settings) -> list[Chunk]:
     for path in paths:
         payload = json.loads(path.read_text(encoding="utf-8"))
         dataset = payload.get("dataset", path.stem)
+        title = f"HarborHub {dataset}"
         for order, record in enumerate(payload.get("records", [])):
             employee_id = record.get("employee_id")
             office_id = record.get("office_id")
             ticket_id = record.get("ticket_id")
             label = employee_id or office_id or ticket_id or f"row-{order}"
-            text = (
-                f"Dataset: {dataset}\n"
-                f"Record id: {label}\n"
-                f"{_record_text(record)}"
-            )
+            section = f"{dataset}/{label}"
+            text = f"Dataset: {dataset}\nRecord id: {label}\n{_record_text(record)}"
             chunks.append(
                 Chunk(
                     chunk_id=f"data:{path.name}:{label}",
-                    source_path=str(path.relative_to(settings.root)),
+                    source_path=str(path.relative_to(settings.root)).replace("\\", "/"),
                     source_name=path.name,
+                    source_format="json",
+                    title=title,
+                    section=section,
                     kind="structured",
                     text=text,
+                    snippet=make_snippet(text),
                     order=order,
                     extra={
                         "dataset": dataset,
-                        "employee_id": employee_id,
-                        "office_id": office_id,
-                        "ticket_id": ticket_id,
+                        "employee_id": employee_id or "",
+                        "office_id": office_id or "",
+                        "ticket_id": ticket_id or "",
                     },
                 )
             )
@@ -157,6 +268,7 @@ def load_chunks(settings: Settings | None = None) -> list[Chunk]:
 
 
 def write_index(settings: Settings | None = None) -> Path:
+    """Write the JSON chunk cache (citations + debugging). Vector persist is separate."""
     settings = settings or get_settings()
     settings.cache_dir.mkdir(parents=True, exist_ok=True)
     chunks = load_chunks(settings)

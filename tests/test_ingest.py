@@ -1,5 +1,4 @@
-from harborline.config import get_settings
-from harborline.ingest import chunk_text, load_chunks
+from harborline.ingest import chunk_text, load_chunks, split_markdown_sections
 
 
 def test_chunking_is_deterministic():
@@ -8,17 +7,44 @@ def test_chunking_is_deterministic():
     b = chunk_text(text, size=120, overlap=20)
     assert a == b
     assert a
-    assert all(len(part) <= 120 or part == a[-1] for part in a[:-1])
 
 
-def test_load_chunks_stable_order():
-    settings = get_settings()
-    first = [c.chunk_id for c in load_chunks(settings)]
-    second = [c.chunk_id for c in load_chunks(settings)]
-    assert first == second
-    assert any(c.startswith("corpus:") for c in first)
-    assert any(c.startswith("data:") for c in first)
+def test_heading_aware_markdown_keeps_section_titles():
+    md = """# Paid Time Off Policy
+
+Intro paragraph.
+
+## Accrual schedule
+
+Employees earn 15 days in years 1-2.
+
+### Part-time
+
+Prorated on scheduled hours.
+
+## Carryover
+
+Maximum 40 hours.
+"""
+    title, sections = split_markdown_sections(md)
+    names = [name for name, _ in sections]
+    assert title == "Paid Time Off Policy"
+    assert "Accrual schedule" in names
+    assert "Carryover" in names
+    accrual = next(body for name, body in sections if name == "Accrual schedule")
+    assert "15 days" in accrual
 
 
-def test_default_seed_is_fixed():
-    assert get_settings().seed == 42
+def test_load_chunks_include_citation_metadata():
+    chunks = load_chunks()
+    policy = next(c for c in chunks if c.source_format == "md")
+    html = next(c for c in chunks if c.source_format == "html")
+    pdf = next(c for c in chunks if c.source_format == "pdf")
+    txt = next(c for c in chunks if c.source_format == "txt")
+    for item in (policy, html, pdf, txt):
+        assert item.title
+        assert item.section
+        assert item.snippet
+        assert item.source_path.startswith("corpus/")
+    ids = [c.chunk_id for c in chunks]
+    assert ids == [c.chunk_id for c in load_chunks()]

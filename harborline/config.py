@@ -14,6 +14,8 @@ from dotenv import load_dotenv
 ROOT = Path(__file__).resolve().parents[1]
 
 load_dotenv(ROOT / ".env")
+os.environ.setdefault("HF_HUB_DISABLE_SYMLINKS_WARNING", "1")
+os.environ.setdefault("FASTEMBED_CACHE_PATH", str(ROOT / ".cache" / "fastembed"))
 
 
 def _int(name: str, default: int) -> int:
@@ -33,6 +35,8 @@ class Settings:
     chunk_overlap: int
     top_k: int
     answer_mode: str
+    retrieve_backend: str
+    embedding_model: str
     openai_api_key: str | None
     openai_model: str
     openai_base_url: str | None
@@ -41,6 +45,7 @@ class Settings:
     data_dir: Path
     eval_path: Path
     cache_dir: Path
+    vector_dir: Path
 
     def apply_seeds(self) -> None:
         """Fix process-wide RNGs used for evaluation sampling."""
@@ -66,6 +71,11 @@ def get_settings() -> Settings:
         chunk_overlap=_int("HARBORLINE_CHUNK_OVERLAP", 120),
         top_k=_int("HARBORLINE_TOP_K", 5),
         answer_mode=_str("HARBORLINE_ANSWER_MODE", "retrieve").lower(),
+        retrieve_backend=_str("HARBORLINE_RETRIEVE_BACKEND", "faiss").lower(),
+        embedding_model=_str(
+            "HARBORLINE_EMBEDDING_MODEL",
+            "sentence-transformers/all-MiniLM-L6-v2",
+        ),
         openai_api_key=key,
         openai_model=_str("OPENAI_MODEL", "gpt-4o-mini"),
         openai_base_url=os.getenv("OPENAI_BASE_URL") or None,
@@ -74,4 +84,5 @@ def get_settings() -> Settings:
         data_dir=ROOT / "data",
         eval_path=ROOT / "eval" / "gold_questions.json",
         cache_dir=ROOT / ".cache",
+        vector_dir=ROOT / ".cache" / "faiss",
     )

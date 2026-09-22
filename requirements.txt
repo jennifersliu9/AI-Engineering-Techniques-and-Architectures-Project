@@ -7,6 +7,8 @@ lxml==5.4.0
 pypdf==5.4.0
 fastapi==0.115.12
 uvicorn==0.34.2
+faiss-cpu==1.9.0.post1
+fastembed==0.6.1
 
 # Optional LLM answers. Imported only when HARBORLINE_ANSWER_MODE=llm.
 openai==1.82.0

@@ -5,18 +5,23 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from collections import Counter
 
 from harborline.answer import ask
 from harborline.config import get_settings
 from harborline.evaluate import run_eval
-from harborline.ingest import write_index
+from harborline.ingest import load_chunks, write_index
+from harborline.store import persist_chunks
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Harborline policy Q&A")
     sub = parser.add_subparsers(dest="command", required=True)
 
-    sub.add_parser("ingest", help="Build the deterministic chunk index")
+    sub.add_parser(
+        "ingest",
+        help="Parse corpus, chunk, embed with local MiniLM, and store in FAISS",
+    )
 
     ask_p = sub.add_parser("ask", help="Retrieve (and optionally generate) an answer")
     ask_p.add_argument("query", help="Employee question")
@@ -32,8 +37,15 @@ def main(argv: list[str] | None = None) -> int:
     settings.apply_seeds()
 
     if args.command == "ingest":
-        path = write_index(settings)
-        print(f"Wrote {path} (seed={settings.seed}, size={settings.chunk_size})")
+        chunks = load_chunks(settings)
+        json_path = write_index(settings)
+        stored = persist_chunks(chunks, settings)
+        formats = Counter(c.source_format for c in chunks)
+        print(f"Parsed and chunked {len(chunks)} records")
+        print("  formats:", dict(formats))
+        print(f"  json index: {json_path}")
+        print(f"  vector index: {settings.vector_dir} ({stored} embedded chunks)")
+        print(f"  embedding: local FastEmbed {settings.embedding_model} (no API key)")
         return 0
 
     if args.command == "ask":
@@ -42,9 +54,13 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps(result, indent=2))
         else:
             print(result["answer"])
-            print("\nSources:")
+            print("\nCitations:")
             for src in result["sources"]:
-                print(f"  - {src['source_path']} ({src['kind']}, {src['score']})")
+                print(
+                    f"  - {src['title']} | {src['section']}\n"
+                    f"    {src['source_path']} ({src['kind']}, score={src['score']})\n"
+                    f"    {src['snippet']}"
+                )
         return 0
 
     report = run_eval(settings=settings, limit=args.limit)
@@ -52,7 +68,7 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(report, indent=2))
     else:
         print(
-            f"seed={report['seed']}  n={report['n']}  "
+            f"backend={settings.retrieve_backend}  seed={report['seed']}  n={report['n']}  "
             f"passed={report['passed']}  recall@{report['top_k']}={report['recall_at_k']}"
         )
         for row in report["results"]:

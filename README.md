@@ -71,36 +71,50 @@ copy .env.example .env
 | `HARBORLINE_CHUNK_OVERLAP` | No | Deterministic overlap, default `120` |
 | `HARBORLINE_TOP_K` | No | Default `5` |
 | `HARBORLINE_ANSWER_MODE` | No | `retrieve` (default) or `llm` |
+| `HARBORLINE_RETRIEVE_BACKEND` | No | `faiss` (default) or `tfidf` |
+| `HARBORLINE_EMBEDDING_MODEL` | No | Local MiniLM, default `sentence-transformers/all-MiniLM-L6-v2` |
 
 `.gitignore` excludes `.env`, `.venv/`, and `.cache/`.
 
-## Local run
+## How to execute the RAG pipeline
 
-Ingest builds a deterministic chunk index (useful as a cache; ask/eval also load sources directly):
+Do this from the repo root with `.venv` activated. No API key is required.
+
+**1. Parse and clean (markdown, HTML, PDF, TXT)**  
+The ingest command reads `corpus/` (and `data/*.json` as structured records). Markdown and HTML are split on headings. PDFs are split by page, then by the same window if a page is long. TXT uses a body window with overlap.
+
+**2–5. Chunk, embed, store, keep citation metadata** — one command:
 
 ```powershell
 python -m harborline.cli ingest
 ```
 
-Ask a policy question:
+What that does:
+
+| Step | What runs | Why |
+| --- | --- | --- |
+| Chunk | Heading-aware sections, then 900-character windows with 120-character overlap | Policy answers live under `##` headings; overlap keeps a split sentence in both chunks |
+| Embed | Local ONNX **all-MiniLM-L6-v2** via FastEmbed (free, CPU, no API key) | First run downloads the small model into the FastEmbed cache |
+| Store | Persistent **FAISS** index at `.cache/faiss` | Local vector store; cosine similarity (inner product on L2-normalized vectors) |
+| Metadata | `title`, `section`, `source_path`, `source_format`, `snippet`, `kind`, ids | Citations in `ask` / `--json` |
+
+You should see counts by format (`md`, `html`, `pdf`, `txt`, `json`) and the FAISS path.
+
+**3. Ask (retrieves from FAISS, prints citations)**
 
 ```powershell
 python -m harborline.cli ask "How many PTO days do I get after my second anniversary?"
-```
-
-Ask with an employee record in context:
-
-```powershell
 python -m harborline.cli ask "Can I use PTO tomorrow?" --employee-id EMP-1014
-```
-
-JSON output:
-
-```powershell
 python -m harborline.cli ask "What is the US hotel cap?" --json
 ```
 
-HTTP (same retriever):
+If you skip ingest, the first `ask` will embed on the fly (slower). Run ingest once.
+
+**Fallback without embeddings:** set `HARBORLINE_RETRIEVE_BACKEND=tfidf` in `.env`.
+
+## Local run (HTTP)
+
+Run ingest first, then:
 
 ```powershell
 uvicorn harborline.api:app --reload --port 8000
@@ -123,7 +137,9 @@ pytest
 
 `--limit` samples with `HARBORLINE_SEED` (default 42), so two runs with the same seed and limit return the same subset.
 
-Chunking is a fixed sliding window. It does not shuffle documents. `PYTHONHASHSEED` is set to the same seed when you call `Settings.apply_seeds()`.
+`python -m harborline.cli eval` uses FAISS after ingest. `pytest` uses TF-IDF so unit tests stay offline and fast.
+
+Heading-aware chunking is deterministic. Oversize sections use a fixed window (no shuffle). `PYTHONHASHSEED` is set when you call `Settings.apply_seeds()`.
 
 ## Deployment
 
@@ -152,7 +168,8 @@ For a hosted deploy (Cloud Run, App Service, Fly.io), set the same env vars in t
 | --- | --- | --- |
 | `HARBORLINE_SEED` | 42 | `random`, NumPy, eval sampling, LLM `seed` |
 | `HARBORLINE_CHUNK_SIZE` / `OVERLAP` | 900 / 120 | Same text always yields the same chunks |
-| TF-IDF retrieve | — | Stable sort: score desc, `chunk_id` asc |
+| FAISS + MiniLM | local ONNX FastEmbed | Persistent vectors in `.cache/faiss` |
+| TF-IDF retrieve | optional | Stable sort: score desc, `chunk_id` asc |
 
 ## Project layout
 
@@ -160,7 +177,7 @@ For a hosted deploy (Cloud Run, App Service, Fly.io), set the same env vars in t
 corpus/             Policy documents (md, html, txt, pdf)
 data/               Mock employees, PTO, benefits, tickets
 eval/               Gold questions
-harborline/         Ingest, retrieve, ask, eval, API
+harborline/         Parse, chunk, embed, FAISS store, ask, eval, API
 scripts/            PDF builder for companion policy sheets
 tests/              Determinism and eval smoke tests
 requirements.txt    Pip pins

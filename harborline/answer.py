@@ -3,14 +3,15 @@
 from __future__ import annotations
 
 from harborline.config import Settings, get_settings
-from harborline.retrieve import Hit, Retriever, build_retriever
+from harborline.retrieve import Hit, build_retriever
 
 
 def format_context(hits: list[Hit]) -> str:
     blocks = []
     for i, hit in enumerate(hits, start=1):
         blocks.append(
-            f"[{i}] {hit.chunk.source_path} ({hit.chunk.kind}, score={hit.score:.3f})\n"
+            f"[{i}] {hit.chunk.source_path} | {hit.chunk.section} "
+            f"({hit.chunk.kind}, score={hit.score:.3f})\n"
             f"{hit.chunk.text}"
         )
     return "\n\n---\n\n".join(blocks)
@@ -26,11 +27,10 @@ def retrieve_answer(query: str, hits: list[Hit]) -> str:
         "",
     ]
     for i, hit in enumerate(hits, start=1):
-        excerpt = " ".join(hit.chunk.text.split())
-        if len(excerpt) > 420:
-            excerpt = excerpt[:417] + "..."
         lines.append(
-            f"{i}. {hit.chunk.source_path}  score={hit.score:.3f}\n   {excerpt}"
+            f"{i}. {hit.chunk.title} — {hit.chunk.section}  "
+            f"({hit.chunk.source_path}, score={hit.score:.3f})\n"
+            f"   {hit.chunk.snippet}"
         )
     return "\n".join(lines)
 
@@ -65,7 +65,7 @@ def ask(
     query: str,
     employee_id: str | None = None,
     settings: Settings | None = None,
-    retriever: Retriever | None = None,
+    retriever: object | None = None,
 ) -> dict:
     settings = settings or get_settings()
     retriever = retriever or build_retriever(settings)
@@ -84,6 +84,10 @@ def ask(
             {
                 "chunk_id": h.chunk.chunk_id,
                 "source_path": h.chunk.source_path,
+                "source_format": h.chunk.source_format,
+                "title": h.chunk.title,
+                "section": h.chunk.section,
+                "snippet": h.chunk.snippet,
                 "kind": h.chunk.kind,
                 "score": round(h.score, 4),
             }

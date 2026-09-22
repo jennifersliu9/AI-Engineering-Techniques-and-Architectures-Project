@@ -8,13 +8,13 @@ from pydantic import BaseModel, Field
 from harborline.answer import ask
 from harborline.config import get_settings
 from harborline.evaluate import run_eval
-from harborline.retrieve import Retriever, build_retriever
+from harborline.retrieve import build_retriever
 
 app = FastAPI(title="Harborline Q&A", version="0.1.0")
-_retriever: Retriever | None = None
+_retriever = None
 
 
-def get_retriever() -> Retriever:
+def get_retriever():
     global _retriever
     if _retriever is None:
         _retriever = build_retriever(get_settings())
@@ -33,6 +33,8 @@ def health() -> dict:
         "status": "ok",
         "seed": settings.seed,
         "answer_mode": settings.answer_mode,
+        "retrieve_backend": settings.retrieve_backend,
+        "embedding_model": settings.embedding_model,
         "has_openai_key": bool(settings.openai_api_key),
     }
 

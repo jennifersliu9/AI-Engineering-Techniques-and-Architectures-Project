@@ -6,7 +6,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PYTHONHASHSEED=42 \
     HARBORLINE_SEED=42 \
-    HARBORLINE_ANSWER_MODE=retrieve
+    HARBORLINE_ANSWER_MODE=retrieve \
+    HARBORLINE_RETRIEVE_BACKEND=faiss
 
 COPY requirements.txt pyproject.toml README.md ./
 COPY harborline ./harborline

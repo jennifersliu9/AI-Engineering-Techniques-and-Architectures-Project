@@ -1,5 +1,7 @@
 from harborline.config import get_settings
 from harborline.evaluate import run_eval, sample_questions
+from harborline.ingest import load_chunks
+from harborline.retrieve import TfidfRetriever
 
 
 def test_sampling_uses_seed():
@@ -12,7 +14,9 @@ def test_sampling_uses_seed():
 
 
 def test_eval_runs_on_gold_set():
-    report = run_eval(settings=get_settings())
+    settings = get_settings()
+    retriever = TfidfRetriever(load_chunks(settings), settings)
+    report = run_eval(settings=settings, retriever=retriever)
     assert report["seed"] == 42
     assert report["n"] >= 10
     assert 0.0 <= report["recall_at_k"] <= 1.0
