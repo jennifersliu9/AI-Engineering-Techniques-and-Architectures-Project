@@ -1,0 +1,131 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [6 0 R 7 0 R] /Count 2 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Length 3793 >>
+stream
+BT
+/F1 11 Tf
+1 0 0 1 48 742 Tm (Harborline  |  POL-SEC-005-SUM  |  Security summary) Tj
+1 0 0 1 48 729 Tm () Tj
+1 0 0 1 48 716 Tm (HARBORLINE TECHNOLOGIES, INC.) Tj
+1 0 0 1 48 703 Tm (INFORMATION SECURITY SUMMARY \(NEW-HIRE PACKET\)) Tj
+1 0 0 1 48 690 Tm (Policy companion POL-SEC-005-SUM | Controlling policy: POL-SEC-005) Tj
+1 0 0 1 48 677 Tm (Also read: acceptable-use-policy.txt \(POL-SEC-005-AUP\)) Tj
+1 0 0 1 48 664 Tm (Effective 1 January 2026 | Revised 1 September 2026) Tj
+1 0 0 1 48 651 Tm (Security 24/7: +1-206-555-0199 | security@harborline.example) Tj
+1 0 0 1 48 638 Tm (Phishing: phishing@harborline.example) Tj
+1 0 0 1 48 625 Tm () Tj
+1 0 0 1 48 612 Tm (WHY THIS SHEET EXISTS) Tj
+1 0 0 1 48 599 Tm (Harborline hosts operational data for logistics, field-service, and wholesale) Tj
+1 0 0 1 48 586 Tm (customers. This one-pager is what goes in the week-one packet. It does not) Tj
+1 0 0 1 48 573 Tm (replace POL-SEC-005. Production and customer access stay blocked until you) Tj
+1 0 0 1 48 560 Tm (finish the 90-minute Harborline Learn security module \(POL-ONB-007\).) Tj
+1 0 0 1 48 547 Tm () Tj
+1 0 0 1 48 534 Tm (DATA CLASSES) Tj
+1 0 0 1 48 521 Tm (- Public: marketing site, published blogs, job ads. Share freely.) Tj
+1 0 0 1 48 508 Tm (- Internal: org charts, this policy set, ordinary Slack. Employees and signed contractors.) Tj
+1 0 0 1 48 495 Tm (- Confidential: compensation, home addresses, unpublished roadmaps, CRM names.) Tj
+1 0 0 1 48 482 Tm (  Named access on Company systems only. No personal email.) Tj
+1 0 0 1 48 469 Tm (- Restricted: production customer data, credentials, payment data, production) Tj
+1 0 0 1 48 456 Tm (  logs with payloads, government IDs. Production VPC / approved admin tools only.) Tj
+1 0 0 1 48 443 Tm (When unsure, use the higher class. Screenshots inherit the source class.) Tj
+1 0 0 1 48 430 Tm (Restricted exports expire in 30 days. Delete them when the ticket closes.) Tj
+1 0 0 1 48 417 Tm () Tj
+1 0 0 1 48 404 Tm (IDENTITY) Tj
+1 0 0 1 48 391 Tm (Okta + MFA on every internet-facing app. Preferred MFA is a hardware key for) Tj
+1 0 0 1 48 378 Tm (admins, otherwise Okta Verify. SMS MFA is a 7-day recovery method only.) Tj
+1 0 0 1 48 365 Tm (1Password is the password manager. Unique 16+ character passwords when SSO is) Tj
+1 0 0 1 48 352 Tm (impossible. Never paste a password into Slack.) Tj
+1 0 0 1 48 339 Tm () Tj
+1 0 0 1 48 326 Tm (DEVICES) Tj
+1 0 0 1 48 313 Tm (Company laptop only \(POL-EQP-008\). Full-disk encryption, 5-minute screen lock,) Tj
+1 0 0 1 48 300 Tm (EDR agent stays installed. No BYOD laptops. Personal phones: work profile for) Tj
+1 0 0 1 48 287 Tm (Slack / MFA / email only; no production VPN. USB blocked unless Security) Tj
+1 0 0 1 48 274 Tm (approved. Lost or stolen: call +1-206-555-0199 immediately.) Tj
+1 0 0 1 48 261 Tm () Tj
+1 0 0 1 48 248 Tm (WHERE YOU MAY WORK) Tj
+1 0 0 1 48 235 Tm (Hub Wi-Fi or home office on WPA2/WPA3. VPN required for production, payroll,) Tj
+1 0 0 1 48 222 Tm (and Restricted systems. Cafe / coworking: Internal and Public work only. Never) Tj
+1 0 0 1 48 209 Tm (admin production or open payroll from a shared table \(POL-RMT-003\).) Tj
+1 0 0 1 48 196 Tm () Tj
+1 0 0 1 48 183 Tm (AI TOOLS) Tj
+1 0 0 1 48 170 Tm (Use the approved internal assistant for Internal material. Do NOT paste) Tj
+1 0 0 1 48 157 Tm (Confidential people data, Restricted customer data, credentials, or unpublished) Tj
+1 0 0 1 48 144 Tm (security findings into ChatGPT, Claude.ai, Gemini, consumer Copilot, or other) Tj
+1 0 0 1 48 131 Tm (public models. Customer contracts that forbid AI-assisted work win.) Tj
+1 0 0 1 48 118 Tm () Tj
+1 0 0 1 48 105 Tm (INCIDENTS ? ONE HOUR) Tj
+1 0 0 1 48 92 Tm () Tj
+1 0 0 1 48 79 Tm (Fictional company job aid. Not a substitute for POL-SEC-005.  |  Page 1 of 2) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Length 1991 >>
+stream
+BT
+/F1 11 Tf
+1 0 0 1 48 742 Tm (Harborline  |  POL-SEC-005-SUM  |  Security summary) Tj
+1 0 0 1 48 729 Tm () Tj
+1 0 0 1 48 716 Tm (Call +1-206-555-0199 if it is active \(session still open, laptop still missing,) Tj
+1 0 0 1 48 703 Tm (ransomware note\). Email security@harborline.example with what, when, which) Tj
+1 0 0 1 48 690 Tm (systems, and whether a customer might be affected. Do not power off unless) Tj
+1 0 0 1 48 677 Tm (told \(except disconnect Wi-Fi for ransomware\). Do not brief customers until) Tj
+1 0 0 1 48 664 Tm (Security and Communications agree. Good-faith false alarms are encouraged.) Tj
+1 0 0 1 48 651 Tm () Tj
+1 0 0 1 48 638 Tm (PHISHING) Tj
+1 0 0 1 48 625 Tm (Report Phish button or phishing@harborline.example. Finance will never change) Tj
+1 0 0 1 48 612 Tm (a vendor bank account by Slack alone.) Tj
+1 0 0 1 48 599 Tm () Tj
+1 0 0 1 48 586 Tm (PHYSICAL) Tj
+1 0 0 1 48 573 Tm (No tailgating. Shred Confidential paper. Wipe street-facing whiteboards.) Tj
+1 0 0 1 48 560 Tm (Report a lost badge the same day.) Tj
+1 0 0 1 48 547 Tm () Tj
+1 0 0 1 48 534 Tm (VENDORS) Tj
+1 0 0 1 48 521 Tm (No shadow vendors on a personal card for customer data. Contracts + DPA when) Tj
+1 0 0 1 48 508 Tm (Confidential or Restricted data is involved.) Tj
+1 0 0 1 48 495 Tm () Tj
+1 0 0 1 48 482 Tm (EXCEPTIONS) Tj
+1 0 0 1 48 469 Tm (Only the Head of Information Security \(or delegate\) can approve USB, SMS MFA) Tj
+1 0 0 1 48 456 Tm (beyond 7 days, personal-device production access, or a public-AI use case.) Tj
+1 0 0 1 48 443 Tm (Exceptions expire. Slack is not an approval record.) Tj
+1 0 0 1 48 430 Tm () Tj
+1 0 0 1 48 417 Tm (LEAVE / LAST DAY) Tj
+1 0 0 1 48 404 Tm (Confidentiality survives employment. Return keys, badge, YubiKey, and laptop) Tj
+1 0 0 1 48 391 Tm (within 10 days \(POL-EQP-008\). Do not self-wipe the disk.) Tj
+1 0 0 1 48 378 Tm () Tj
+1 0 0 1 48 365 Tm () Tj
+1 0 0 1 48 352 Tm (Fictional company job aid. Not a substitute for POL-SEC-005.  |  Page 2 of 2) Tj
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 3 0 R >> >> >>
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 5 0 R /Resources << /Font << /F1 3 0 R >> >> >>
+endobj
+xref
+0 8
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000127 00000 n 
+0000000197 00000 n 
+0000004042 00000 n 
+0000006085 00000 n 
+0000006211 00000 n 
+trailer
+<< /Size 8 /Root 1 0 R >>
+startxref
+6337
+%%EOF

@@ -1,0 +1,136 @@
+HARBORLINE TECHNOLOGIES, INC.
+PTO QUICK REFERENCE — POL-PTO-001-QR
+Effective 1 January 2026  |  Revised 1 September 2026
+Full policy: POL-PTO-001 (01-paid-time-off.md)
+People system: HarborHub > Time Off
+Questions: hr@harborline.example
+
+====================================================================
+1. WHO EARNS PTO
+====================================================================
+Regular full-time (30+ hours/week): full accrual below.
+Regular part-time (20-29 hours/week): prorated by scheduled hours / 40.
+Interns and agency temps: no PTO. They observe office closures.
+Ireland: company PTO is ON TOP of statutory annual leave. Combined
+time off will not go below 20 working days + public holidays.
+
+PTO accrues from day 1. You may use it after 30 calendar days unless
+your offer letter already approved dates (those must be in HarborHub
+before you start).
+
+====================================================================
+2. ACCRUAL (US / Canada regular employees)
+====================================================================
+Paid semi-monthly (24 periods). Full-time day = 8 hours.
+
+  Tenure band                         Days/yr   Hours/yr   Hours/period
+  Hire through 2nd anniversary           15        120         5.00
+  Day after 2nd ann. through 6th ann.    20        160         6.67
+  Day after 6th anniversary              25        200         8.33
+
+The higher rate starts on the FIRST pay period that BEGINS after the
+anniversary, not on the anniversary date itself.
+
+Example: 24-hour part-time employee in year 1
+  120 x (24/40) = 72 hours/year = 3.00 hours per pay period.
+
+There is no unlimited-PTO program. A manager cannot invent a grant.
+A higher grant is valid only if it is in the offer letter AND HarborHub.
+
+====================================================================
+3. SICK TIME (separate bank, US)
+====================================================================
+Full-time: 10 days (80 hours) on 1 January, or prorated if you start
+mid-year (remaining months / 12).
+Part-time: prorated on scheduled hours.
+Ireland: follows Irish sick-pay + occupational scheme, NOT this 10-day
+US bank stacked on top.
+Unused sick time: no carryover, no payout at year-end or termination.
+3+ consecutive sick days: manager notifies People Operations (POL-LOA-009).
+
+====================================================================
+4. HOW TO REQUEST
+====================================================================
+HarborHub > Time Off > Request > code PTO (not Sick, Holiday, or Leave).
+Minimum increment: 1 hour.
+
+Length of request          Minimum notice         Manager target
+1-8 hours                  End of prior workday   1 business day
+2-3 consecutive workdays   5 business days        2 business days
+4-9 consecutive workdays   15 calendar days       5 business days
+10+ consecutive workdays   30 calendar days       10 business days
+
+Tie-breaker for the same week on the same on-call rotation:
+earlier HarborHub timestamp, unless a documented customer commitment
+requires the opposite. Seniority is not the tie-breaker.
+
+====================================================================
+5. BLACKOUTS
+====================================================================
+Engineering, Customer Success, and Finance may publish blackouts.
+  - Announced at least 60 days ahead
+  - Max 10 consecutive business days unless CPO approves longer
+  - Already-approved PTO stays approved
+  - New requests need manager AND function director
+Company holidays are never blackout days (POL-HOL-002).
+
+====================================================================
+6. CARRYOVER AND YEAR-END
+====================================================================
+Max carryover into next calendar year: 40 HOURS.
+Cutoff: 11:59 p.m. Pacific Time, 31 December.
+Exceptions: written People Ops approval before 15 December, OR
+state law (California employees: the 40-hour forfeiture does not
+apply the same way; ask hr@harborline.example).
+HarborHub shows projected forfeiture starting 1 October.
+Floating holidays (POL-HOL-002) do NOT carry over.
+Sick time does NOT carry over.
+
+====================================================================
+7. NEGATIVE BALANCE
+====================================================================
+Up to 16 hours negative with manager + People Ops approval.
+Repaid from future accruals. If you leave while negative, we deduct
+from final pay where state law allows (never below minimum wage for
+non-exempt employees). Advances larger than 16 hours: not available.
+
+====================================================================
+8. HOLIDAYS AND LEAVES
+====================================================================
+Holiday during PTO = coded HOLIDAY, not PTO. You keep those hours.
+Parental leave (POL-FAM-011) is paid by the company; you do not have
+to exhaust PTO first.
+Jury duty and bereavement have their own codes (POL-LOA-009).
+If you start medical/family leave, stop coding PTO for the same days
+unless you elect in writing to supplement unpaid leave.
+
+====================================================================
+9. PAYOUT WHEN YOU LEAVE
+====================================================================
+Unused accrued PTO: paid on the final paycheck at current base rate,
+except willful misconduct after a documented investigation AND only
+where state law allows withholding.
+Sick time, floating holidays, and unearned future PTO: not paid out.
+Notice: 2 weeks typical; 4 weeks for director+. We may decline new
+PTO during a notice period if coverage would fail.
+
+====================================================================
+10. QUESTIONS THIS SHEET IS MEANT TO ANSWER
+====================================================================
+Q: Third year of service, how many days?
+A: 20 days (160 hours) starting the pay period after the 2nd
+   anniversary.
+
+Q: Can I carry 80 unused hours into January?
+A: No. 40-hour cap, unless a written exception or California rules.
+
+Q: Started 15 August, roughly how much PTO on 1 December?
+A: About 8 semi-monthly periods x 5.00 hours = 40 hours, minus usage.
+   HarborHub is official.
+
+Q: Friday + Monday around a Thursday holiday — do I use 3 PTO days?
+A: No. Holiday is Holiday. PTO is only the working days you are away.
+
+====================================================================
+End of POL-PTO-001-QR. This is a fictional company job aid.
+====================================================================

@@ -1,0 +1,106 @@
+HARBORLINE TECHNOLOGIES, INC.
+ACCEPTABLE USE POLICY (EMPLOYEE ACKNOWLEDGMENT TEXT)
+Policy ID: POL-SEC-005-AUP
+Controlling policy: POL-SEC-005 Information Security
+Effective: 1 January 2026   Revised: 1 September 2026
+Acknowledge in Harborline Learn during week one, then every January.
+
+This short text is what you sign. The full rules are in POL-SEC-005.
+If they disagree, POL-SEC-005 wins.
+
+--------------------------------------------------------------------
+1. SYSTEMS ARE COMPANY PROPERTY
+--------------------------------------------------------------------
+Harborline email, Slack, laptops, badges, cloud accounts, and customer
+environments are Company systems. Use them for Harborline work. Light
+personal use (news, banking) is allowed. Family logins, torrenting,
+and storing a household photo library as the main purpose of the disk
+are not.
+
+You should not expect privacy on Company systems equivalent to a
+personal device. Security and People Operations may review accounts
+during an investigation (POL-CON-010, POL-SEC-005).
+
+--------------------------------------------------------------------
+2. IDENTITY
+--------------------------------------------------------------------
+- MFA is required on Okta and every internet-facing app.
+- Use 1Password for work passwords. Do not reuse passwords. Do not
+  put passwords in Slack, email, or a ticket.
+- Do not share your login. Managers will not ask you to share a
+  password with a new hire (POL-ONB-007).
+- If you think a password or MFA device is burned, call
+  +1-206-555-0199 and email security@harborline.example the same hour.
+
+--------------------------------------------------------------------
+3. DATA
+--------------------------------------------------------------------
+Four classes: Public, Internal, Confidential, Restricted.
+Customer production data is Restricted even when a field "looks boring."
+
+- Confidential and Restricted data stay on Company systems.
+- Do not forward work mail to personal Gmail/Yahoo.
+- Do not put customer tenants, credentials, or people data into a
+  public AI tool (ChatGPT, Claude.ai, Gemini, consumer Copilot, etc.).
+  Use the approved internal assistant for Internal material.
+- USB storage is blocked unless Security approved an exception.
+- Exports of Restricted data expire in 30 days. Delete them.
+
+--------------------------------------------------------------------
+4. DEVICES
+--------------------------------------------------------------------
+Work happens on Harborline-managed laptops (POL-EQP-008). There is no
+BYOD laptop program.
+
+- Encryption, 5-minute screen lock, and the EDR agent stay on.
+- Personal phones may hold Slack/MFA/email only with a work profile.
+- Lost or stolen device: +1-206-555-0199 immediately.
+- Cafes are fine for Internal work. They are not fine for Restricted
+  data, production admin, or payroll (POL-RMT-003).
+
+--------------------------------------------------------------------
+5. PHISHING AND INCIDENTS
+--------------------------------------------------------------------
+Report suspicious email with the Report Phish button or
+phishing@harborline.example. Report suspicious Slack DMs to Security.
+
+An incident (malware, lost laptop, wrong-person email with customer
+data, ransomware note) must be reported within ONE HOUR of suspicion:
+  phone +1-206-555-0199
+  email security@harborline.example
+
+There is no penalty for a good-faith false alarm. Handling it quietly
+overnight is not a perk.
+
+Finance will never change a vendor bank account by Slack alone.
+
+--------------------------------------------------------------------
+6. SOFTWARE AND MONITORING
+--------------------------------------------------------------------
+Install software from the IT catalog. Unapproved remote-desktop tools,
+disk "cleaners," and random browser extensions are out.
+
+Harborline monitors endpoints, VPN, and mail metadata for security.
+Illegal content and harassment on Company systems are prohibited
+(POL-CON-010).
+
+--------------------------------------------------------------------
+7. WHEN YOU LEAVE
+--------------------------------------------------------------------
+Access ends on the last day. Return the laptop, charger, monitor,
+dock, badge, and hardware security keys within 10 calendar days
+(POL-EQP-008). Do not wipe the laptop yourself. Confidentiality
+continues after your last day.
+
+--------------------------------------------------------------------
+8. ACKNOWLEDGMENT
+--------------------------------------------------------------------
+By checking the box in Harborline Learn I acknowledge that I have
+read this acceptable-use text and that I know the full policy is
+POL-SEC-005. I know how to report an incident. I understand that
+violations can lead to loss of access, discipline, or termination,
+and that contractors can lose their engagement.
+
+Questions: security@harborline.example or it-help@harborline.example.
+
+End of POL-SEC-005-AUP. Fictional company acknowledgment text.
