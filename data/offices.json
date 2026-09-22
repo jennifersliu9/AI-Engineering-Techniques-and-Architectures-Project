@@ -1,0 +1,51 @@
+{
+  "dataset": "offices",
+  "company": "Harborline Technologies, Inc.",
+  "as_of": "2026-09-21",
+  "source_system": "HarborHub",
+  "related_policies": ["POL-HB-000", "POL-RMT-003"],
+  "records": [
+    {
+      "office_id": "OFF-SEA",
+      "name": "Seattle headquarters",
+      "city": "Seattle",
+      "region": "WA",
+      "country": "US",
+      "postal_code": "98104",
+      "address_line": "418 Occidental Ave S, Suite 600",
+      "timezone": "America/Los_Angeles",
+      "hub_radius_miles": 50,
+      "location_category": "hub_seattle",
+      "headcount_approx": 310,
+      "workplace_email": "workplace@harborline.example"
+    },
+    {
+      "office_id": "OFF-AUS",
+      "name": "Austin office",
+      "city": "Austin",
+      "region": "TX",
+      "country": "US",
+      "postal_code": "78701",
+      "address_line": "600 Congress Ave, Floor 14",
+      "timezone": "America/Chicago",
+      "hub_radius_miles": 50,
+      "location_category": "hub_austin",
+      "headcount_approx": 180,
+      "workplace_email": "workplace@harborline.example"
+    },
+    {
+      "office_id": "OFF-DUB",
+      "name": "Dublin office",
+      "city": "Dublin",
+      "region": "Dublin",
+      "country": "IE",
+      "postal_code": "D02 A342",
+      "address_line": "2 Grand Canal Square",
+      "timezone": "Europe/Dublin",
+      "hub_radius_km": 50,
+      "location_category": "hub_dublin",
+      "headcount_approx": 90,
+      "workplace_email": "workplace@harborline.example"
+    }
+  ]
+}
