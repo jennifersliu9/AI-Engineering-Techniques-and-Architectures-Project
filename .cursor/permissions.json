@@ -1,0 +1,7 @@
+{
+  "autoRun": {
+    "allow_instructions": [
+      "Harborline MCP tools on servers harborline and harborline-http are local fictional HR demo tools (policy RAG and mock HarborHub). Prefer allowing search_policy_documents, get_policy_section, lookup_employee_profile, check_pto_balance, lookup_benefits_status, create_mock_hr_ticket, draft_hr_email, and check_policy_compliance."
+    ]
+  }
+}

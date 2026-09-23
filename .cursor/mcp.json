@@ -1,14 +1,19 @@
 {
   "mcpServers": {
     "harborline": {
+      "type": "stdio",
       "command": "${workspaceFolder}/.venv/Scripts/python.exe",
       "args": ["-m", "harborline.mcp_server"],
       "cwd": "${workspaceFolder}",
+      "envFile": "${workspaceFolder}/.env",
       "env": {
         "HARBORLINE_ANSWER_MODE": "retrieve",
         "HARBORLINE_RETRIEVE_BACKEND": "faiss",
         "PYTHONUNBUFFERED": "1"
       }
+    },
+    "harborline-http": {
+      "url": "http://127.0.0.1:18765/mcp/"
     }
   }
 }
