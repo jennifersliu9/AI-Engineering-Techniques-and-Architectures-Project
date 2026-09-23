@@ -8,6 +8,16 @@ Fictional Harborline Technologies policies plus HarborHub-style employee records
 
 Default answer mode is **retrieve-only**. It does not need an API key. Set `HARBORLINE_ANSWER_MODE=llm` and `OPENAI_API_KEY` only if you want a generated answer.
 
+### FLAG — EXTERNAL vs what Cursor can do
+
+| Cursor / this repo can do | EXTERNAL (you must do outside this chat) |
+| --- | --- |
+| Write `harborline/tools.py`, `mcp_server.py`, `mcp_client.py`, `.cursor/mcp.json`, CLI, tests | **Enable MCP** in Cursor Settings and allow the `harborline` server |
+| Agent calls tools via MCP `tools/list` + `tools/call` (stdio or in-process FastMCP) | **Restart Cursor** after changing `mcp.json` so the stdio server is relaunched |
+| Retrieve-only answers, rewrite, rerank, guardrails, FAISS/TF-IDF (no API key) | Put **`OPENAI_API_KEY`** in a local `.env` if you want LLM synthesis (`HARBORLINE_ANSWER_MODE=llm`) |
+| Mock HR tickets / emails (never persist to disk) | A real HarborHub / HRIS write — **not implemented** and must stay mock |
+| Document architecture in [`docs/mcp.md`](docs/mcp.md) | Start Streamable HTTP yourself if you want that transport instead of stdio |
+
 ## Prerequisites
 
 - Python 3.11+ (3.12 recommended)
@@ -200,15 +210,77 @@ For a hosted deploy (Cloud Run, App Service, Fly.io), set the same env vars in t
 | FAISS + MiniLM | local ONNX FastEmbed | Persistent vectors in `.cache/faiss` |
 | TF-IDF retrieve | optional | Stable sort: score desc, `chunk_id` asc |
 
+## Tools and MCP
+
+Full write-up: [`docs/mcp.md`](docs/mcp.md).
+
+The MCP server is `python -m harborline.mcp_server` (FastMCP, **stdio** by default). `.cursor/mcp.json` points Cursor at this repo's venv Python. The agent client (`harborline.mcp_client`) **discovers** tools with `tools/list` and **calls** them with `tools/call`. Hard-coded `harborline.tools` imports are not used during agent execution.
+
+**RAG / policy evidence:** `search_policy_documents`, `get_policy_section`, `check_policy_compliance`  
+**Mock HarborHub rows:** `lookup_employee_profile`, `check_pto_balance`, `lookup_benefits_status`  
+**Mock operations:** `create_mock_hr_ticket`, `draft_hr_email` (never persist; `--confirm` is session-only)
+
+```powershell
+python -m harborline.cli mcp-probe --transport mcp-stdio --backend tfidf
+python -m harborline.cli tool lookup_employee_profile EMP-1008
+python -m harborline.cli tool search_policy_documents "PTO carryover 40 hours" --kind policy --backend tfidf
+python -m harborline.cli tool get_policy_section POL-PTO-001 --section Eligibility
+python -m harborline.cli tool create_mock_hr_ticket --topic pto_request --employee-id EMP-1008 --summary "Friday off"
+```
+
+`--confirm` only stores a **session-only MOCK** id. Nothing is written to `data/tickets.json` or any live HRIS.
+
+Optional localhost MCP (EXTERNAL: you start this process):
+
+```powershell
+python -m harborline.mcp_server --transport streamable-http --port 8765
+```
+
+### EXTERNAL — enable MCP in Cursor (this chat cannot do this)
+
+1. Install deps so the `mcp` package is present (`pip install -r requirements.txt` and `pip install -e .`).
+2. Confirm `.cursor/mcp.json` exists (already in the repo).
+3. **You** enable MCP in **Cursor Settings** and allow the `harborline` server.
+4. **You** restart Cursor after editing `mcp.json`.
+5. For FAISS inside the Cursor-hosted server, **you** run ingest once (or set `HARBORLINE_RETRIEVE_BACKEND=tfidf` in `mcp.json`).
+6. Optional LLM synthesis: **you** put `OPENAI_API_KEY` in a local `.env` (never commit it) and set `HARBORLINE_ANSWER_MODE=llm`.
+7. Streamable HTTP is not started by Cursor unless **you** launch it and add the URL.
+
+The CLI agent does **not** need Cursor Settings. Default transport is stdio (`python -m harborline.cli agent`). Use `--transport mcp-inproc` to stay in one process.
+
+## Agent orchestrator
+
+`python -m harborline.cli agent` interprets intent, decides whether RAG alone is enough, calls **MCP-exposed** tools, and prints a **visible operational trace** (discovered tools, selected tools, arguments, output summaries, retrieved sources, escalation). This is a log, not hidden chain-of-thought.
+
+Two multi-step HR workflows are wired end-to-end:
+
+| Workflow | Example | MCP tools |
+| --- | --- | --- |
+| Remote work eligibility | EMP-1008 lives in Tacoma (32 miles) and is still coded hub | `lookup_employee_profile`, `search_policy_documents`, `check_policy_compliance` |
+| PTO request guidance | EMP-1014 is not eligible to use PTO until 2026-10-08 | `lookup_employee_profile`, `check_pto_balance`, `get_policy_section`; submit is `create_mock_hr_ticket` |
+
+Also routed: benefits (`lookup_benefits_status`), expense compliance, onboarding (`get_policy_section`), and HR case triage (ticket + email are MOCK).
+
+```powershell
+# Default: spawn the MCP stdio server, then tools/list + tools/call. No API key.
+python -m harborline.cli agent "Am I eligible for fully remote work living in Tacoma?" --employee-id EMP-1008 --backend tfidf
+python -m harborline.cli agent "Can I take PTO next week?" --employee-id EMP-1014 --backend tfidf
+python -m harborline.cli agent "Can I take PTO next week?" --employee-id EMP-1014 --backend tfidf --transport mcp-inproc
+```
+
+Graceful failures: missing employee ids, incomplete policy evidence, ambiguous requests, and an unavailable MCP bus. Irreversible actions stay MOCK unless you pass `--confirm`, and even then they never persist to disk.
+
 ## Project layout
 
 ```
 corpus/             Policy documents (md, html, txt, pdf)
 data/               Mock employees, PTO, benefits, tickets
 eval/               Gold questions
-harborline/         Parse, chunk, embed, FAISS store, ask, eval, API
+harborline/         Parse, chunk, embed, FAISS, ask, tools, MCP server/client, agent, API
+docs/mcp.md         MCP transport, schemas, discovery
+.cursor/mcp.json    Cursor MCP server config (you still enable MCP in Settings)
 scripts/            PDF builder for companion policy sheets
-tests/              Determinism and eval smoke tests
+tests/              Determinism, eval, tools, and orchestrator tests
 requirements.txt    Pip pins
 requirements-dev.txt
 environment.yml     Conda env

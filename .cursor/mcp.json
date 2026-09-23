@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "harborline": {
+      "command": "${workspaceFolder}/.venv/Scripts/python.exe",
+      "args": ["-m", "harborline.mcp_server"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "HARBORLINE_ANSWER_MODE": "retrieve",
+        "HARBORLINE_RETRIEVE_BACKEND": "faiss",
+        "PYTHONUNBUFFERED": "1"
+      }
+    }
+  }
+}
