@@ -24,6 +24,8 @@ def get_retriever():
 class AskRequest(BaseModel):
     query: str = Field(min_length=2)
     employee_id: str | None = None
+    kind: str | None = None
+    source_format: str | None = None
 
 
 @app.get("/health")
@@ -46,6 +48,8 @@ def ask_endpoint(body: AskRequest) -> dict:
         return ask(
             body.query,
             employee_id=body.employee_id,
+            kind=body.kind,
+            source_format=body.source_format,
             settings=settings,
             retriever=get_retriever(),
         )

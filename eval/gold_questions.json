@@ -91,6 +91,17 @@
       "employee_id": "EMP-1011",
       "expected_sources": ["pto_balances.json", "01-paid-time-off.md"],
       "expected_employee_ids": ["EMP-1011"]
+    },
+    {
+      "id": "q-multi-thanksgiving-hub",
+      "question": "I live 32 miles from the Seattle office and want PTO Wednesday through Friday of Thanksgiving week 2026. Do I lose PTO hours for the company holidays, and do I still owe three office days that week?",
+      "expected_sources": [
+        "01-paid-time-off.md",
+        "02-company-holidays.md",
+        "03-remote-hybrid-work.md"
+      ],
+      "require_all_sources": true,
+      "notes": "Complex: PTO vs holiday coding plus hub 50-mile / 3-day office rule."
     }
   ]
 }

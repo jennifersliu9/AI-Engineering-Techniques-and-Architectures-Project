@@ -71,6 +71,10 @@ copy .env.example .env
 | `HARBORLINE_CHUNK_OVERLAP` | No | Deterministic overlap, default `120` |
 | `HARBORLINE_TOP_K` | No | Default `5` |
 | `HARBORLINE_ANSWER_MODE` | No | `retrieve` (default) or `llm` |
+| `HARBORLINE_REWRITE` | No | Query expansion, default `true` |
+| `HARBORLINE_RERANK` | No | Lexical + diverse-source rerank, default `true` |
+| `HARBORLINE_FETCH_K` | No | Candidate pool before rerank, default `20` |
+| `HARBORLINE_MIN_SCORE` | No | Guardrail floor, default `0.22` |
 | `HARBORLINE_RETRIEVE_BACKEND` | No | `faiss` (default) or `tfidf` |
 | `HARBORLINE_EMBEDDING_MODEL` | No | Local MiniLM, default `sentence-transformers/all-MiniLM-L6-v2` |
 
@@ -106,7 +110,32 @@ You should see counts by format (`md`, `html`, `pdf`, `txt`, `json`) and the FAI
 python -m harborline.cli ask "How many PTO days do I get after my second anniversary?"
 python -m harborline.cli ask "Can I use PTO tomorrow?" --employee-id EMP-1014
 python -m harborline.cli ask "What is the US hotel cap?" --json
+python -m harborline.cli ask "Should I buy bitcoin with my bonus?"
 ```
+
+The last example is **out of corpus** and is refused.
+
+**Complex (multi-document) question** — PTO + holidays + hub office days:
+
+```powershell
+python -m harborline.cli ask "I live 32 miles from the Seattle office and want PTO Wednesday through Friday of Thanksgiving week 2026. Do I lose PTO hours for the company holidays, and do I still owe three office days that week?"
+```
+
+Optional filters: `--kind policy` or `--kind structured`, plus `--source-format md`.
+
+### Generated answers (optional LLM)
+
+Retrieval, rewrite, rerank, citations, and guardrails **do not need an API key**.
+
+To have the model write a **Policy fact / Citations / Not a recommendation** answer:
+
+1. Create an OpenAI account (or any OpenAI-compatible endpoint).
+2. Copy `.env.example` to `.env` locally.
+3. Set `OPENAI_API_KEY` in `.env` (never commit `.env`, never paste the key into chat).
+4. Set `HARBORLINE_ANSWER_MODE=llm`.
+5. Run the same `ask` commands. Temperature is `0` and `seed` is `42`.
+
+Azure or a gateway: also set `OPENAI_BASE_URL`.
 
 If you skip ingest, the first `ask` will embed on the fly (slower). Run ingest once.
 

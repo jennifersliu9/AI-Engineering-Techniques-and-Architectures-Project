@@ -26,6 +26,8 @@ def main(argv: list[str] | None = None) -> int:
     ask_p = sub.add_parser("ask", help="Retrieve (and optionally generate) an answer")
     ask_p.add_argument("query", help="Employee question")
     ask_p.add_argument("--employee-id", dest="employee_id", default=None)
+    ask_p.add_argument("--kind", default=None, help="Filter: policy or structured")
+    ask_p.add_argument("--source-format", dest="source_format", default=None)
     ask_p.add_argument("--json", action="store_true")
 
     eval_p = sub.add_parser("eval", help="Run seeded retrieval evaluation")
@@ -49,18 +51,27 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.command == "ask":
-        result = ask(args.query, employee_id=args.employee_id, settings=settings)
+        result = ask(
+            args.query,
+            employee_id=args.employee_id,
+            kind=args.kind,
+            source_format=args.source_format,
+            settings=settings,
+        )
         if args.json:
             print(json.dumps(result, indent=2))
         else:
+            if result["rewritten_query"] != args.query:
+                print(f"Rewritten query: {result['rewritten_query']}\n")
             print(result["answer"])
-            print("\nCitations:")
-            for src in result["sources"]:
-                print(
-                    f"  - {src['title']} | {src['section']}\n"
-                    f"    {src['source_path']} ({src['kind']}, score={src['score']})\n"
-                    f"    {src['snippet']}"
-                )
+            if result["sources"]:
+                print("\nCitations:")
+                for src in result["sources"]:
+                    print(
+                        f"  [{src['n']}] {src['title']} | {src['section']}\n"
+                        f"    {src['source_path']} ({src['kind']}, score={src['score']})\n"
+                        f"    {src['snippet']}"
+                    )
         return 0
 
     report = run_eval(settings=settings, limit=args.limit)
