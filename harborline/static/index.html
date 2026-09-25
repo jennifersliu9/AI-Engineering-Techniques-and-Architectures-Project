@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Harborline People Desk</title>
+  <style>
+    :root {
+      --ink: #1b2430;
+      --muted: #5c6b7a;
+      --paper: #f4efe6;
+      --card: #fffdf8;
+      --line: #d7cfc3;
+      --sea: #0f5c63;
+      --sea-deep: #0a3d42;
+      --clay: #c45c26;
+      --ok: #2f6f4e;
+      --warn: #9a4d14;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse at top right, #e4f0ee 0%, transparent 42%),
+        var(--paper);
+    }
+    header {
+      padding: 1.4rem 1.6rem 1rem;
+      border-bottom: 1px solid var(--line);
+      background: #fbf7f0;
+    }
+    header .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    h1 {
+      margin: 0;
+      font-size: 1.55rem;
+      letter-spacing: 0.01em;
+      color: var(--sea-deep);
+    }
+    .tag {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--clay);
+    }
+    header p { margin: 0.45rem 0 0; color: var(--muted); max-width: 46rem; }
+    main {
+      display: grid;
+      grid-template-columns: minmax(280px, 360px) 1fr;
+      gap: 1.25rem;
+      padding: 1.25rem 1.6rem 2rem;
+    }
+    @media (max-width: 860px) { main { grid-template-columns: 1fr; } }
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 1rem 1.05rem;
+    }
+    label {
+      display: block;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--sea);
+      margin-bottom: 0.35rem;
+    }
+    textarea, input {
+      width: 100%;
+      font: inherit;
+      padding: 0.55rem 0.65rem;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+    }
+    textarea { min-height: 7rem; resize: vertical; }
+    .row { margin-bottom: 0.85rem; }
+    button {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      border: 0;
+      border-radius: 6px;
+      padding: 0.55rem 0.8rem;
+      cursor: pointer;
+    }
+    .primary {
+      background: var(--sea);
+      color: #fff;
+      width: 100%;
+      font-weight: 600;
+    }
+    .primary:disabled { opacity: 0.55; cursor: wait; }
+    .demos { display: flex; flex-direction: column; gap: 0.45rem; margin-top: 0.85rem; }
+    .demo {
+      background: #eef5f4;
+      color: var(--sea-deep);
+      text-align: left;
+      border: 1px solid #c5d8d6;
+    }
+    .hint { font-family: "Segoe UI", system-ui, sans-serif; font-size: 0.8rem; color: var(--muted); }
+    .status { margin-top: 0.8rem; font-family: "Segoe UI", system-ui, sans-serif; font-size: 0.8rem; }
+    .dot { display: inline-block; width: 0.55rem; height: 0.55rem; border-radius: 50%; margin-right: 0.35rem; }
+    .dot.ok { background: var(--ok); }
+    .dot.bad { background: var(--clay); }
+    .answer { white-space: pre-wrap; line-height: 1.45; }
+    h2 {
+      margin: 0 0 0.65rem;
+      font-size: 1.05rem;
+      color: var(--sea-deep);
+    }
+    ol, .trace { margin: 0; padding-left: 1.15rem; }
+    li { margin: 0.35rem 0; }
+    .snippet {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      font-size: 0.88rem;
+      color: #334;
+      border-left: 3px solid var(--sea);
+      padding-left: 0.6rem;
+      margin: 0.45rem 0;
+    }
+    .trace li { font-family: "Consolas", "Cascadia Mono", monospace; font-size: 0.78rem; }
+    .empty { color: var(--muted); }
+    .meta { font-family: "Segoe UI", system-ui, sans-serif; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.75rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <h1>Harborline People Desk</h1>
+      <span class="tag">Fictional · HarborHub + policy RAG</span>
+    </div>
+    <p>Ask about PTO, remote work, expenses, benefits, or onboarding. Answers come from the Harborline corpus and mock HarborHub records, with citations and a tool-call trace.</p>
+  </header>
+  <main>
+    <section class="panel">
+      <div class="row">
+        <label for="query">Question</label>
+        <textarea id="query" placeholder="Example: Am I eligible for fully remote work living in Tacoma?"></textarea>
+      </div>
+      <div class="row">
+        <label for="employee">Employee id (optional)</label>
+        <input id="employee" placeholder="EMP-1008" />
+      </div>
+      <button class="primary" id="ask" type="button">Ask People Desk</button>
+      <p class="hint">Grader demos (same payloads as POST /chat):</p>
+      <div class="demos">
+        <button class="demo" id="demo-remote" type="button">Demo 1 · Remote eligibility · EMP-1008</button>
+        <button class="demo" id="demo-pto" type="button">Demo 2 · PTO guidance · EMP-1014</button>
+      </div>
+      <div class="status" id="health">Checking /health…</div>
+    </section>
+    <section class="panel" id="out">
+      <p class="empty">Submit a question or run a grader demo. The response will include the answer, citations, snippets, and MCP tool-call trace.</p>
+    </section>
+  </main>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const DEMOS = {
+      remote: {
+        query: "Am I eligible for fully remote work living in Tacoma?",
+        employee_id: "EMP-1008",
+      },
+      pto: {
+        query: "Can I take PTO next week?",
+        employee_id: "EMP-1014",
+      },
+    };
+
+    async function loadHealth() {
+      try {
+        const res = await fetch("/health");
+        const data = await res.json();
+        const mcp = data.mcp || {};
+        const ok = data.app === "ok" && mcp.available;
+        $("health").innerHTML =
+          `<span class="dot ${ok ? "ok" : "bad"}"></span>` +
+          `app=${data.app || data.status} · mcp=${mcp.available ? "connected" : "unavailable"}` +
+          (mcp.tool_count != null ? ` · ${mcp.tool_count} tools` : "");
+      } catch (err) {
+        $("health").innerHTML = `<span class="dot bad"></span>health check failed`;
+      }
+    }
+
+    function render(data) {
+      const citations = (data.citations || []).map((c) =>
+        `<li>[${c.n}] ${c.title || ""} — ${c.section || ""} <span class="hint">(${c.source_path || ""})</span></li>`
+      ).join("");
+      const snippets = (data.snippets || []).map((s) =>
+        `<p class="snippet">[${s.n}] ${s.snippet}</p>`
+      ).join("");
+      const trace = (data.trace || []).map((t, i) =>
+        `<li>step ${i + 1}: ${t.tool} ok=${t.ok} — ${t.output_summary || ""}</li>`
+      ).join("");
+      $("out").innerHTML = `
+        <p class="meta">intent=${data.intent || ""} · workflow=${data.workflow || ""} · transport=${data.tool_transport || ""}</p>
+        <h2>Answer</h2>
+        <div class="answer">${escapeHtml(data.answer || "")}</div>
+        <h2>Citations</h2>
+        ${citations ? `<ol>${citations}</ol>` : `<p class="empty">None</p>`}
+        <h2>Snippets</h2>
+        ${snippets || `<p class="empty">None</p>`}
+        <h2>Tool-call trace</h2>
+        ${trace ? `<ol class="trace">${trace}</ol>` : `<p class="empty">None</p>`}
+      `;
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+    }
+
+    async function send(query, employeeId) {
+      $("ask").disabled = true;
+      $("out").innerHTML = `<p class="empty">Calling POST /chat…</p>`;
+      try {
+        const res = await fetch("/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            query,
+            employee_id: employeeId || null,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || res.statusText);
+        render(data);
+      } catch (err) {
+        $("out").innerHTML = `<p class="empty">Request failed: ${escapeHtml(err.message)}</p>`;
+      } finally {
+        $("ask").disabled = false;
+      }
+    }
+
+    $("ask").addEventListener("click", () => send($("query").value.trim(), $("employee").value.trim()));
+    $("demo-remote").addEventListener("click", () => {
+      $("query").value = DEMOS.remote.query;
+      $("employee").value = DEMOS.remote.employee_id;
+      send(DEMOS.remote.query, DEMOS.remote.employee_id);
+    });
+    $("demo-pto").addEventListener("click", () => {
+      $("query").value = DEMOS.pto.query;
+      $("employee").value = DEMOS.pto.employee_id;
+      send(DEMOS.pto.query, DEMOS.pto.employee_id);
+    });
+    loadHealth();
+  </script>
+</body>
+</html>

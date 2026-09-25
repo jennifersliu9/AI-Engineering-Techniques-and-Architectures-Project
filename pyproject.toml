@@ -35,6 +35,9 @@ harborline = "harborline.cli:main"
 [tool.setuptools.packages.find]
 include = ["harborline*"]
 
+[tool.setuptools.package-data]
+harborline = ["static/*"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"

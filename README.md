@@ -159,10 +159,17 @@ Run ingest first, then:
 uvicorn harborline.api:app --reload --port 8000
 ```
 
+Open **http://127.0.0.1:8000** for the People Desk chat UI. Use the two grader demo buttons, or POST `/chat`.
+
 ```powershell
 curl http://127.0.0.1:8000/health
+curl http://127.0.0.1:8000/demos
+curl -X POST http://127.0.0.1:8000/chat -H "Content-Type: application/json" -d "{\"query\":\"Am I eligible for fully remote work living in Tacoma?\",\"employee_id\":\"EMP-1008\"}"
+curl -X POST http://127.0.0.1:8000/chat -H "Content-Type: application/json" -d "{\"query\":\"Can I take PTO next week?\",\"employee_id\":\"EMP-1014\"}"
 curl -X POST http://127.0.0.1:8000/ask -H "Content-Type: application/json" -d "{\"query\":\"When does the 401k match vest?\"}"
 ```
+
+`GET /health` reports `app` plus `mcp.available` and discovered tool names. `POST /chat` runs the MCP orchestrator and returns `answer`, `citations`, `snippets`, and `trace`. `POST /ask` is retrieve-only (no agent).
 
 ## Evaluation
 
