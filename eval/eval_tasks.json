@@ -1,0 +1,293 @@
+{
+  "dataset": "harborline_eval_tasks",
+  "as_of": "2026-09-24",
+  "seed": 42,
+  "notes": "26 gold tasks for policy Q&A and agentic workflows. Used by python -m harborline.cli report.",
+  "tasks": [
+    {
+      "id": "t-pto-tenure",
+      "family": "policy_qa",
+      "question": "How many PTO days do I get after my second anniversary?",
+      "gold_answer": "20 days (160 hours) after the second anniversary (POL-PTO-001).",
+      "expected_contains": ["20"],
+      "expected_sources": ["01-paid-time-off.md", "pto-quick-reference.txt"],
+      "expected_intent": "pto_guidance",
+      "expected_tools": ["search_policy_documents"],
+      "latency": true
+    },
+    {
+      "id": "t-pto-carryover",
+      "family": "policy_qa",
+      "question": "What is the PTO carryover cap in hours?",
+      "gold_answer": "40 hours carryover cap except California (POL-PTO-001).",
+      "expected_contains": ["40"],
+      "expected_sources": ["01-paid-time-off.md", "pto-quick-reference.txt"],
+      "expected_intent": "pto_guidance",
+      "expected_tools": ["search_policy_documents"],
+      "latency": true
+    },
+    {
+      "id": "t-hotel-cap",
+      "family": "policy_qa",
+      "question": "What is the US hotel nightly cap for a Chicago trip?",
+      "gold_answer": "US hotel cap is $225 per night (POL-EXP-004).",
+      "expected_contains": ["225"],
+      "expected_sources": ["04-travel-and-expenses.md", "expense-limits-2026.pdf"],
+      "expected_intent": "expense_compliance",
+      "expected_tools": ["check_policy_compliance"],
+      "latency": true
+    },
+    {
+      "id": "t-receipt",
+      "family": "policy_qa",
+      "question": "Do I need a receipt for an 18 dollar lunch?",
+      "gold_answer": "Receipts are required at $25 and above (POL-EXP-004).",
+      "expected_contains": ["25"],
+      "expected_sources": ["04-travel-and-expenses.md", "expense-limits-2026.pdf"],
+      "expected_intent": "expense_compliance",
+      "expected_tools": ["check_policy_compliance"]
+    },
+    {
+      "id": "t-401k-vest",
+      "family": "policy_qa",
+      "question": "When does the Harborline 401k match vest?",
+      "gold_answer": "Company 401(k) match vests immediately (POL-BEN-006).",
+      "expected_contains": ["immediate"],
+      "expected_sources": ["06-employee-benefits.md", "benefits-enrollment-guide.html"],
+      "expected_intent": "benefits",
+      "expected_tools": ["search_policy_documents"],
+      "latency": true
+    },
+    {
+      "id": "t-parental-secondary",
+      "family": "policy_qa",
+      "question": "How many weeks of paid parental leave do secondary caregivers get?",
+      "gold_answer": "8 weeks paid for secondary caregivers (POL-FAM-011).",
+      "expected_contains": ["8"],
+      "expected_sources": ["11-parental-and-family-care.md"],
+      "expected_intent": "policy_qa",
+      "expected_tools": ["search_policy_documents"]
+    },
+    {
+      "id": "t-thanksgiving-holiday",
+      "family": "policy_qa",
+      "question": "Is the day after Thanksgiving a company holiday in 2026?",
+      "gold_answer": "Yes. 27 November 2026 is a US company holiday.",
+      "expected_contains": ["November"],
+      "expected_sources": ["02-company-holidays.md", "holiday-calendar-2026.html"],
+      "expected_intent": "policy_qa",
+      "expected_tools": ["search_policy_documents"]
+    },
+    {
+      "id": "t-remote-radius-policy",
+      "family": "policy_qa",
+      "question": "What is the mile radius that separates hub and remote employees?",
+      "gold_answer": "Hub vs remote uses a 50-mile rule (POL-RMT-003).",
+      "expected_contains": ["50"],
+      "expected_sources": ["03-remote-hybrid-work.md"],
+      "expected_intent": "remote_eligibility",
+      "expect_clarification": true
+    },
+    {
+      "id": "t-multi-thanksgiving-hub",
+      "family": "multi_doc",
+      "question": "I live 32 miles from the Seattle office and want PTO Wednesday through Friday of Thanksgiving week 2026. Do I lose PTO hours for the company holidays, and do I still owe three office days that week?",
+      "gold_answer": "Thanksgiving and the day after are holidays (no PTO charged). Hub staff still follow POL-RMT-003 office-day rules unless the office is closed. The live agent should clarify because the ask spans PTO and office-day workflows.",
+      "expected_contains": ["workflow"],
+      "expected_intent": "ambiguous",
+      "expect_clarification": true,
+      "expected_tools": [],
+      "latency": true
+    },
+    {
+      "id": "t-multi-newhire-benefits",
+      "family": "multi_doc",
+      "question": "How long do I have to elect medical coverage after my start date?",
+      "gold_answer": "30 days from start date to elect medical (POL-BEN-006 / POL-ONB-007).",
+      "expected_contains": ["30"],
+      "expected_sources": ["06-employee-benefits.md", "07-new-hire-onboarding.md", "benefits-enrollment-guide.html"],
+      "expected_intent": "benefits",
+      "expected_tools": ["search_policy_documents"],
+      "latency": true
+    },
+    {
+      "id": "t-multi-phishing",
+      "family": "multi_doc",
+      "question": "What do I do if I clicked a phishing link and entered my Okta password?",
+      "gold_answer": "Report immediately; Security hotline +1-206-555-0199 (POL-SEC-005).",
+      "expected_contains": ["206-555-0199"],
+      "expected_sources": ["05-information-security.md", "acceptable-use-policy.txt"],
+      "expected_intent": "policy_qa",
+      "expected_tools": ["search_policy_documents"]
+    },
+    {
+      "id": "t-multi-onboarding-i9",
+      "family": "multi_doc",
+      "question": "What must a new hire complete on day one besides I-9?",
+      "gold_answer": "Day-one checklist in POL-ONB-007 includes I-9, HarborHub access, and security training gates.",
+      "expected_contains": ["I-9"],
+      "expected_sources": ["07-new-hire-onboarding.md"],
+      "expected_intent": "onboarding",
+      "expected_tools": ["get_policy_section"],
+      "latency": true
+    },
+    {
+      "id": "t-tool-remote-1008",
+      "family": "tool",
+      "question": "Am I eligible for fully remote work living in Tacoma?",
+      "employee_id": "EMP-1008",
+      "gold_answer": "Alex Kim is hub_seattle at 32 miles; hub staff owe 3 office days. Fully remote needs People Ops reclass (POL-RMT-003).",
+      "expected_contains": ["Alex Kim", "hub"],
+      "expected_sources": ["03-remote-hybrid-work.md"],
+      "expected_intent": "remote_eligibility",
+      "expected_tools": ["lookup_employee_profile", "search_policy_documents", "check_policy_compliance"],
+      "expect_escalation": true,
+      "latency": true
+    },
+    {
+      "id": "t-tool-pto-1014",
+      "family": "tool",
+      "question": "Can I take PTO next week?",
+      "employee_id": "EMP-1014",
+      "gold_answer": "Devon Walsh has 5.0 PTO hours and eligible_to_use=false until 2026-10-08.",
+      "expected_contains": ["Devon Walsh"],
+      "expected_sources": ["01-paid-time-off.md"],
+      "expected_intent": "pto_guidance",
+      "expected_tools": ["lookup_employee_profile", "check_pto_balance", "get_policy_section"],
+      "latency": true
+    },
+    {
+      "id": "t-tool-submit-pto",
+      "family": "tool",
+      "question": "Please submit a PTO request for next Friday",
+      "employee_id": "EMP-1008",
+      "confirm": false,
+      "gold_answer": "No live HarborHub write. MOCK ticket pending confirmation.",
+      "expected_contains": ["MOCK"],
+      "expected_intent": "pto_guidance",
+      "expected_tools": ["lookup_employee_profile", "create_mock_hr_ticket"],
+      "write_attempt": true,
+      "action_must_stay_mock": true,
+      "latency": true
+    },
+    {
+      "id": "t-tool-benefits-1008",
+      "family": "tool",
+      "question": "What medical plan and 401k deferral do I have?",
+      "employee_id": "EMP-1008",
+      "gold_answer": "Look up EMP-1008 HarborHub benefits elections (POL-BEN-006).",
+      "expected_contains": ["401"],
+      "expected_sources": ["06-employee-benefits.md"],
+      "expected_intent": "benefits",
+      "expected_tools": ["lookup_benefits_status", "search_policy_documents"],
+      "latency": true
+    },
+    {
+      "id": "t-tool-intern-pto",
+      "family": "tool",
+      "question": "Can I take PTO next Friday?",
+      "employee_id": "EMP-1016",
+      "gold_answer": "Maya Chen is an intern and does not accrue PTO (POL-PTO-001).",
+      "expected_contains": ["intern"],
+      "expected_intent": "pto_guidance",
+      "expected_tools": ["lookup_employee_profile", "check_pto_balance"]
+    },
+    {
+      "id": "t-tool-triage-hotline",
+      "family": "tool",
+      "question": "I need to file a case about harassment. What is the hotline?",
+      "confirm": false,
+      "gold_answer": "Report to manager, hr@harborline.example, or +1-800-555-0148. Ticket/email stay MOCK.",
+      "expected_contains": ["800-555-0148"],
+      "expected_sources": ["10-workplace-conduct.md"],
+      "expected_intent": "hr_triage",
+      "expected_tools": ["search_policy_documents", "create_mock_hr_ticket", "draft_hr_email"],
+      "expect_escalation": true,
+      "write_attempt": true,
+      "action_must_stay_mock": true,
+      "latency": true
+    },
+    {
+      "id": "t-tool-hotel-over-cap",
+      "family": "tool",
+      "question": "Can I expense a $250 hotel night in Chicago?",
+      "gold_answer": "Noncompliant: US hotel cap is $225 (POL-EXP-004).",
+      "expected_contains": ["225"],
+      "expected_sources": ["04-travel-and-expenses.md", "expense-limits-2026.pdf"],
+      "expected_intent": "expense_compliance",
+      "expected_tools": ["check_policy_compliance"],
+      "latency": true
+    },
+    {
+      "id": "t-ambiguous-remote-pto",
+      "family": "ambiguous",
+      "question": "remote PTO hybrid vacation",
+      "gold_answer": "Clarify which workflow: remote eligibility vs PTO guidance.",
+      "expected_intent": "ambiguous",
+      "expect_clarification": true,
+      "expected_tools": [],
+      "latency": true
+    },
+    {
+      "id": "t-ambiguous-benefits-hub",
+      "family": "ambiguous",
+      "question": "I have a question about 401k enrollment and also my hub office days",
+      "gold_answer": "Matches benefits and remote workflows; ask the user to pick one.",
+      "expected_intent": "ambiguous",
+      "expect_clarification": true,
+      "expected_tools": []
+    },
+    {
+      "id": "t-clarify-remote-no-id",
+      "family": "ambiguous",
+      "question": "Am I eligible for remote work?",
+      "gold_answer": "Need an employee id such as EMP-1008 before applying the 50-mile hub rule.",
+      "expected_intent": "remote_eligibility",
+      "expect_clarification": true,
+      "expected_contains": ["EMP-"],
+      "latency": true
+    },
+    {
+      "id": "t-oos-bitcoin",
+      "family": "oos",
+      "question": "Should I buy bitcoin with my bonus?",
+      "gold_answer": "Out of corpus. Refuse; do not invent an answer.",
+      "expected_contains": ["outside"],
+      "expected_intent": "policy_qa",
+      "expect_escalation": true,
+      "expected_tools": [],
+      "latency": true
+    },
+    {
+      "id": "t-oos-vote",
+      "family": "oos",
+      "question": "Who should I vote for in the next election?",
+      "gold_answer": "Out of corpus. Refuse.",
+      "expected_contains": ["outside"],
+      "expected_intent": "policy_qa",
+      "expect_escalation": true,
+      "expected_tools": []
+    },
+    {
+      "id": "t-oos-other-employer",
+      "family": "oos",
+      "question": "How does Acme Corp handle bonuses versus Harborline?",
+      "gold_answer": "Other-employer policies are out of corpus. Refuse.",
+      "expected_contains": ["outside"],
+      "expected_intent": "policy_qa",
+      "expect_escalation": true,
+      "expected_tools": []
+    },
+    {
+      "id": "t-missing-employee",
+      "family": "tool",
+      "question": "Am I remote eligible?",
+      "employee_id": "EMP-9999",
+      "gold_answer": "No HarborHub profile for EMP-9999. Escalate; do not invent eligibility.",
+      "expected_intent": "remote_eligibility",
+      "expected_tools": ["lookup_employee_profile"],
+      "expect_escalation": true,
+      "latency": true
+    }
+  ]
+}

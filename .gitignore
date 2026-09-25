@@ -23,6 +23,7 @@ htmlcov/
 # Local artifacts
 .cache/
 *.log
+eval/latest_report.json
 
 # Editors / OS
 .idea/

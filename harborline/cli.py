@@ -11,6 +11,7 @@ from collections import Counter
 from harborline.agent import run_agent
 from harborline.answer import ask
 from harborline.config import get_settings
+from harborline.benchmark import format_report, run_report
 from harborline.evaluate import run_eval
 from harborline.ingest import load_chunks, write_index
 from harborline.mcp_client import open_mcp_bus
@@ -56,6 +57,19 @@ def main(argv: list[str] | None = None) -> int:
     eval_p = sub.add_parser("eval", help="Run seeded retrieval evaluation")
     eval_p.add_argument("--limit", type=int, default=None, help="Sample N gold items")
     eval_p.add_argument("--json", action="store_true")
+
+    report_p = sub.add_parser(
+        "report",
+        help="Run the 20-30 task eval: quality, agent behavior, latency, ablation",
+    )
+    report_p.add_argument("--limit", type=int, default=None, help="Sample N gold tasks")
+    report_p.add_argument("--json", action="store_true")
+    report_p.add_argument(
+        "--write",
+        action="store_true",
+        help="Write eval/latest_report.json and eval/REPORT.md",
+    )
+    report_p.add_argument("--backend", choices=["faiss", "tfidf"], default=None)
 
     tool_p = sub.add_parser(
         "tool",
@@ -215,6 +229,25 @@ def main(argv: list[str] | None = None) -> int:
             print()
             print(result.answer)
         return 0 if not result.needs_clarification else 2
+
+    if args.command == "report":
+        if getattr(args, "backend", None):
+            os.environ["HARBORLINE_RETRIEVE_BACKEND"] = args.backend
+            get_settings.cache_clear()
+        settings = get_settings()
+        report = run_report(settings=settings, limit=args.limit)
+        if args.write:
+            out_json = settings.root / "eval" / "latest_report.json"
+            out_md = settings.root / "eval" / "REPORT.md"
+            out_json.write_text(json.dumps(report, indent=2, default=str), encoding="utf-8")
+            out_md.write_text(format_report(report) + "\n", encoding="utf-8")
+        text = json.dumps(report, indent=2, default=str) if args.json else format_report(report)
+        try:
+            print(text)
+        except UnicodeEncodeError:
+            sys.stdout.buffer.write(text.encode("utf-8", errors="replace"))
+            sys.stdout.buffer.write(b"\n")
+        return 0
 
     report = run_eval(settings=settings, limit=args.limit)
     if args.json:

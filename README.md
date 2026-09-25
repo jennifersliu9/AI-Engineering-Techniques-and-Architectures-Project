@@ -5,6 +5,8 @@ Fictional Harborline Technologies policies plus HarborHub-style employee records
 - Policies: [`corpus/README.md`](corpus/README.md)
 - Structured records: [`data/README.md`](data/README.md)
 - Gold questions: [`eval/gold_questions.json`](eval/gold_questions.json)
+- Agent/Q&A gold tasks: [`eval/eval_tasks.json`](eval/eval_tasks.json)
+- Latest metrics: [`eval/REPORT.md`](eval/REPORT.md)
 
 Default answer mode is **retrieve-only**. It does not need an API key. Set `HARBORLINE_ANSWER_MODE=llm` and `OPENAI_API_KEY` only if you want a generated answer.
 
@@ -173,13 +175,16 @@ curl -X POST http://127.0.0.1:8000/ask -H "Content-Type: application/json" -d "{
 
 ## Evaluation
 
-Gold items live in `eval/gold_questions.json`. Retrieval is scored as **recall@k**: a question passes if an expected source (and employee id, when required) appears in the top-k hits.
+Retrieval gold items live in `eval/gold_questions.json` (**recall@k**). The fuller agent/Q&A set is `eval/eval_tasks.json` (26 tasks: policy Q&A, multi-document, tool workflows, ambiguous, out-of-scope) with gold answers.
 
 ```powershell
 python -m harborline.cli eval
 python -m harborline.cli eval --limit 8 --json
+python -m harborline.cli report --backend tfidf --write
 pytest
 ```
+
+`report` prints answer quality (groundedness, citation accuracy, partial match), agent behavior (tool selection, workflow completion, escalation/clarification, action safety), latency p50/p95 with a first-task cold vs later warm split, and an ablation (retrieval `top_k` 3/5/8 plus MCP tools vs retrieve-only). `--write` saves `eval/latest_report.json` and `eval/REPORT.md`. Free-tier hosts that sleep add extra cold-start time on the first HTTP hit; the local report notes that separately.
 
 `--limit` samples with `HARBORLINE_SEED` (default 42), so two runs with the same seed and limit return the same subset.
 
@@ -206,7 +211,20 @@ Health check: `GET /health`.
 Ask: `POST /ask`.  
 Eval: `GET /eval`.
 
-For a hosted deploy (Cloud Run, App Service, Fly.io), set the same env vars in the service configuration, attach `corpus/`, `data/`, and `eval/`, and keep `HARBORLINE_SEED=42` if you want eval numbers that match local runs.
+For a hosted deploy (Cloud Run, App Service, Fly.io, Render), set the same env vars in the service configuration, attach `corpus/`, `data/`, and `eval/`, and keep `HARBORLINE_SEED=42` if you want eval numbers that match local runs.
+
+## CI / CD
+
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every **push** and **pull request**.
+
+1. Install `requirements.txt` + `requirements-dev.txt` and `pip install -e .`.
+2. Import/start check: load `harborline.api:app` and the MCP server factory.
+3. `pytest` including:
+   - **App start:** `GET /` and `GET /health` (`tests/test_api.py`)
+   - **MCP discovery + call:** `mcp.discovered_tools` on `/health`, plus `tests/test_mcp.py` (`tools/list` and `lookup_employee_profile`)
+4. **Deploy runs only if that test job succeeds** (`needs: test`). Pull requests never deploy. On push, CI calls a Render deploy hook **only** if you add a GitHub Actions secret named `RENDER_DEPLOY_HOOK`. Until that secret exists, the deploy job is a successful no-op (no live URL yet).
+
+CI uses `HARBORLINE_RETRIEVE_BACKEND=tfidf` so it stays offline and does not download MiniLM.
 
 ## Reproducibility
 
