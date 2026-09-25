@@ -18,7 +18,16 @@ class Hit:
     chunk: Chunk
 
 
-def _keep_hit(chunk: Chunk, employee_id: str | None) -> bool:
+def _keep_hit(
+    chunk: Chunk,
+    employee_id: str | None,
+    kind: str | None = None,
+    source_format: str | None = None,
+) -> bool:
+    if kind and chunk.kind != kind:
+        return False
+    if source_format and chunk.source_format != source_format:
+        return False
     if not employee_id:
         return True
     extra_id = chunk.extra.get("employee_id") or ""
@@ -42,6 +51,8 @@ class TfidfRetriever:
         query: str,
         top_k: int | None = None,
         employee_id: str | None = None,
+        kind: str | None = None,
+        source_format: str | None = None,
     ) -> list[Hit]:
         k = top_k or self.settings.top_k
         q = query.strip()
@@ -56,7 +67,7 @@ class TfidfRetriever:
         hits: list[Hit] = []
         for i in ranked:
             chunk = self.chunks[i]
-            if not _keep_hit(chunk, employee_id):
+            if not _keep_hit(chunk, employee_id, kind, source_format):
                 continue
             hits.append(Hit(score=float(scores[i]), chunk=chunk))
             if len(hits) >= k:
@@ -76,6 +87,8 @@ class VectorRetriever:
         query: str,
         top_k: int | None = None,
         employee_id: str | None = None,
+        kind: str | None = None,
+        source_format: str | None = None,
     ) -> list[Hit]:
         from harborline.store import embed_texts
 
@@ -91,7 +104,7 @@ class VectorRetriever:
             if int(row) < 0:
                 continue
             chunk = metadata_to_chunk(self.records[int(row)])
-            if not _keep_hit(chunk, employee_id):
+            if not _keep_hit(chunk, employee_id, kind, source_format):
                 continue
             hits.append(Hit(score=float(score), chunk=chunk))
             if len(hits) >= k:

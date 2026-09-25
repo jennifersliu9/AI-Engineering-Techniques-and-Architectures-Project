@@ -28,6 +28,18 @@ def _str(name: str, default: str) -> str:
     return default if raw is None or raw == "" else raw
 
 
+def _float(name: str, default: float) -> float:
+    raw = os.getenv(name)
+    return default if raw is None or raw == "" else float(raw)
+
+
+def _bool(name: str, default: bool) -> bool:
+    raw = os.getenv(name)
+    if raw is None or raw == "":
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+
 @dataclass(frozen=True)
 class Settings:
     seed: int
@@ -37,6 +49,10 @@ class Settings:
     answer_mode: str
     retrieve_backend: str
     embedding_model: str
+    min_score: float
+    fetch_k: int
+    rewrite_queries: bool
+    rerank: bool
     openai_api_key: str | None
     openai_model: str
     openai_base_url: str | None
@@ -76,6 +92,10 @@ def get_settings() -> Settings:
             "HARBORLINE_EMBEDDING_MODEL",
             "sentence-transformers/all-MiniLM-L6-v2",
         ),
+        min_score=_float("HARBORLINE_MIN_SCORE", 0.22),
+        fetch_k=_int("HARBORLINE_FETCH_K", 20),
+        rewrite_queries=_bool("HARBORLINE_REWRITE", True),
+        rerank=_bool("HARBORLINE_RERANK", True),
         openai_api_key=key,
         openai_model=_str("OPENAI_MODEL", "gpt-4o-mini"),
         openai_base_url=os.getenv("OPENAI_BASE_URL") or None,
