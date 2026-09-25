@@ -206,7 +206,20 @@ Health check: `GET /health`.
 Ask: `POST /ask`.  
 Eval: `GET /eval`.
 
-For a hosted deploy (Cloud Run, App Service, Fly.io), set the same env vars in the service configuration, attach `corpus/`, `data/`, and `eval/`, and keep `HARBORLINE_SEED=42` if you want eval numbers that match local runs.
+For a hosted deploy (Cloud Run, App Service, Fly.io, Render), set the same env vars in the service configuration, attach `corpus/`, `data/`, and `eval/`, and keep `HARBORLINE_SEED=42` if you want eval numbers that match local runs.
+
+## CI / CD
+
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every **push** and **pull request**.
+
+1. Install `requirements.txt` + `requirements-dev.txt` and `pip install -e .`.
+2. Import/start check: load `harborline.api:app` and the MCP server factory.
+3. `pytest` including:
+   - **App start:** `GET /` and `GET /health` (`tests/test_api.py`)
+   - **MCP discovery + call:** `mcp.discovered_tools` on `/health`, plus `tests/test_mcp.py` (`tools/list` and `lookup_employee_profile`)
+4. **Deploy runs only if that test job succeeds** (`needs: test`). Pull requests never deploy. On push, CI calls a Render deploy hook **only** if you add a GitHub Actions secret named `RENDER_DEPLOY_HOOK`. Until that secret exists, the deploy job is a successful no-op (no live URL yet).
+
+CI uses `HARBORLINE_RETRIEVE_BACKEND=tfidf` so it stays offline and does not download MiniLM.
 
 ## Reproducibility
 

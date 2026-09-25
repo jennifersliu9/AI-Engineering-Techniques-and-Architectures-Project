@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+env:
+  HARBORLINE_ANSWER_MODE: retrieve
+  HARBORLINE_RETRIEVE_BACKEND: tfidf
+  HARBORLINE_SEED: "42"
+  PYTHONHASHSEED: "42"
+
+jobs:
+  test:
+    name: Install, start check, and tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r requirements-dev.txt
+          pip install -e .
+
+      - name: Import and start check
+        run: |
+          python -c "from harborline.api import app; from harborline.mcp_server import create_server, MCP_TOOL_NAMES; assert app.title; assert len(MCP_TOOL_NAMES) >= 5; print('import_ok', app.title, len(MCP_TOOL_NAMES))"
+
+      - name: Automated tests
+        run: |
+          pytest -q \
+            tests/test_api.py \
+            tests/test_mcp.py \
+            tests/test_agent.py \
+            tests/test_tools.py \
+            tests/test_ingest.py \
+            tests/test_evaluate.py \
+            tests/test_generation.py
+
+  deploy:
+    name: Deploy (only after tests pass)
+    needs: test
+    runs-on: ubuntu-latest
+    if: success()
+    steps:
+      - name: Deploy to Render, or document no-op
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: |
+          if [ "${{ github.event_name }}" != "push" ]; then
+            echo "Tests passed. Skipping deploy on pull_request."
+            exit 0
+          fi
+          if [ -z "$RENDER_DEPLOY_HOOK" ]; then
+            echo "Tests passed. No RENDER_DEPLOY_HOOK secret yet — documented no-op."
+            echo "Add the Render deploy-hook URL as a GitHub Actions secret to enable live deploys."
+            echo "Until then, no host URL is published from CI."
+            exit 0
+          fi
+          echo "Tests passed. Triggering Render deploy hook."
+          curl -fsS -X POST "$RENDER_DEPLOY_HOOK"
+          echo "Deploy hook accepted."
